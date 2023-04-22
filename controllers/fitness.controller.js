@@ -29,6 +29,14 @@ class FitnessController {
 
   async edit(req, res) {
     const oldProgramName = req.body.programName;
+    const newName = req.body.newName;
+
+    if (!oldProgramName || !newName) {
+      return res.status(StatusCodes.BAD_REQUEST).send({
+        success: false,
+        message: 'Must provide old and new pogram name'
+      })
+    }
     const fitnessProgram = await fitnessModel.findOne({
       ProgramName: oldProgramName
     });
@@ -39,7 +47,7 @@ class FitnessController {
         message: "Fitness program not found"
       });
     }
-    const newName = req.body.newName;
+    
 
     try {
       fitnessProgram.updateOne({ ProgramName: newName });
@@ -103,8 +111,8 @@ async createExercise(req, res) {
 }
 
 async deleteExercise(req, res) {
-  const fitnessProgramId = req.body.fitnessProgramId
-  const exerciseName = req.body.exerciseName
+  const fitnessProgramId = req.body.id
+  const exerciseName = req.body.name
   try {
     const result = await fitnessModel.updateOne(
       { _id: fitnessProgramId },
