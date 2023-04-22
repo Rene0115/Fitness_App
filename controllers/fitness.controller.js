@@ -68,7 +68,55 @@ class FitnessController {
 
 
 async createExercise(req, res) {
-  
+  const fitnessProgram = await fitnessModel.findById(req.body.id);
+  if (_.isEmpty(fitnessProgram)) {
+    return res.status(StatusCodes.NOT_FOUND).send({
+      success: false,
+      message: `Could not find fitness program`
+    })
+  }
+
+  const data = {
+    name: req.body.name,
+    length: req.body.length
+  }
+
+  if (!data.name || !data.length) {
+    return res.status(StatusCodes.BAD_REQUEST).send({
+      success: false,
+      message: 'must provide name and length'
+    })
+  }
+
+  try {
+    fitnessProgram.Exercises.push(data);
+    await fitnessProgram.save();
+    return res.status(StatusCodes.CREATED).send({
+      data: fitnessProgram.Exercises,
+      message: "Success"
+    });
+  }
+  catch(error) {
+    return logger.error(error);
+  }
+
+}
+
+async deleteExercise(req, res) {
+  const fitnessProgramId = req.body.fitnessProgramId
+  const exerciseName = req.body.exerciseName
+  try {
+    const result = await fitnessModel.updateOne(
+      { _id: fitnessProgramId },
+      { $pull: { Exercises: { name: exerciseName } } }
+    );
+   return res.status(StatusCodes.OK).send({
+    data: result,
+    success: true
+   })
+  } catch (error) {
+   return logger.error(error);
+  }
 }
 
 

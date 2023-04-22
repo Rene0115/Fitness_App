@@ -13,7 +13,13 @@ const FitnessProgramSchema = mongoose.Schema(
           type: String
         },
         length: {
-          type: Number
+          type: Number,
+          validate: {
+            validator: function(v) {   // checks if the value is a number greater than zero
+              return v % 1 === 0 && v > 0;
+            },
+            message: props => `${props.value} is not a positive integer`
+          }
         }
       }
     ]
